@@ -1,5 +1,7 @@
 from functools import lru_cache
+import logging
 from pathlib import Path
+from time import perf_counter
 
 from sentence_transformers import SentenceTransformer
 
@@ -8,18 +10,34 @@ from myproject.config import EMBEDDING_MODEL
 EMBEDDING_DIMENSIONS = 384
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 150
-EMBEDDING_BATCH_SIZE = 32
+EMBEDDING_BATCH_SIZE = 256
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
 def _embedding_model() -> SentenceTransformer:
+    started_at = perf_counter()
     model = SentenceTransformer(EMBEDDING_MODEL)
     dimensions = model.get_sentence_embedding_dimension()
     if dimensions != EMBEDDING_DIMENSIONS:
         raise ValueError(
             f"Embedding model must return {EMBEDDING_DIMENSIONS} values; got {dimensions}"
         )
+    logger.info(
+        "Embedding model loaded: model=%s device=%s dimensions=%s load_seconds=%.3f",
+        EMBEDDING_MODEL,
+        model.device,
+        dimensions,
+        perf_counter() - started_at,
+    )
     return model
+
+
+def embedding_runtime_info() -> tuple[str, str, bool]:
+    """Return model/device/cache state, loading the cached model if needed."""
+    was_loaded = _embedding_model.cache_info().currsize > 0
+    model = _embedding_model()
+    return EMBEDDING_MODEL, str(model.device), was_loaded
 
 
 def extract_pages(file_path: str) -> list[tuple[int | None, str]]:

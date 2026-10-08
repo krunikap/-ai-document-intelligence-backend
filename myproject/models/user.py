@@ -48,3 +48,12 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+
+
+class RevokedToken(Base):
+    """A token ID that has been logged out before its natural expiry."""
+
+    __tablename__ = "revoked_tokens"
+
+    jti: Mapped[str] = mapped_column(String(36), primary_key=True)
+    expires_at: Mapped[str] = mapped_column(String(40), nullable=False, index=True)

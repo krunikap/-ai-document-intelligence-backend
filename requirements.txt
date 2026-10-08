@@ -1,0 +1,13 @@
+alembic
+celery[redis]
+fastapi
+pgvector
+psycopg[binary]
+pydantic[email]>=2
+python-docx
+python-dotenv
+python-multipart
+pypdf
+sentence-transformers
+sqlalchemy>=2
+uvicorn[standard]

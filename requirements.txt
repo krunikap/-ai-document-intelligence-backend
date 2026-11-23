@@ -1,13 +1,16 @@
 alembic
 celery[redis]
 fastapi
+google-genai>=2.29.0
 pgvector
 psycopg[binary]
+pydantic-settings
 pydantic[email]>=2
+pypdf
 python-docx
 python-dotenv
 python-multipart
-pypdf
+redis
 sentence-transformers
 sqlalchemy>=2
 uvicorn[standard]
